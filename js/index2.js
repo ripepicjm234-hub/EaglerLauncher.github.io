@@ -20,10 +20,18 @@ function shuffle(array) {
     }
 }
 
-let gamelink = ".mc/26.2-wasm"
+let gamelink = "./mc/26.3-wasm/"
 
 // Last Played Game Option
 let selectedGame1 = localStorage.getItem("basegame");
+if (selectedGame1) {
+    try {
+        if (JSON.parse(selectedGame1).link?.includes("26.2")) {
+            localStorage.removeItem("basegame");
+            selectedGame1 = null;
+        }
+    } catch (_) {}
+}
 let selectedGame2 = localStorage.getItem("moddedgame");
 let selectedGame3 = localStorage.getItem("assisted");
 let stealthname = localStorage.getItem("stealthname")

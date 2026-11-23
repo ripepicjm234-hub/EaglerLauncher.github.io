@@ -1,5 +1,12 @@
 [
     {
+       "title": "Eaglercraft 26.3 Mobile",
+       "version": "26.3-beta-wasm",
+       "icon": "./assets/images/mc-icons/poplar-log-wasm.png",
+       "link": "./mc/26.3-wasm/",
+       "active": true
+    },
+    {
        "title": "FlamedDogo's Mobile UI",
        "version": "1.8.8-v3.0.5b",
        "icon": "./assets/images/icons/dogos-mobile.png",

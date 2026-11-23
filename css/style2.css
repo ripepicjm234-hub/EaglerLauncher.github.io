@@ -1217,3 +1217,160 @@ hr {
 #gametitle {
     width: max-content;
 }
+
+.setupdemobutton {
+    margin: 0.75vw 0.2vw 0;
+    color: white;
+    background: transparent;
+}
+
+.setupdemo {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.setupdemocard {
+    width: min(760px, 94vw);
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: clamp(1rem, 3vw, 2rem);
+    border: 1px solid #514d4c;
+    border-radius: 0.75rem;
+    background: #1e1e1e;
+    box-shadow: 0 1rem 4rem rgba(0, 0, 0, 0.6);
+    font-size: clamp(0.9rem, 1.2vw, 1rem);
+}
+
+.setupdemoheader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #353535;
+    font-size: 1.25rem;
+}
+
+.setupdemoheader img {
+    width: 3.5rem;
+    height: 3.5rem;
+    object-fit: contain;
+}
+
+.setupdemolabel {
+    color: #ffd166;
+    font-size: 0.75rem;
+}
+
+.setupdemointro {
+    margin: 1rem 0;
+}
+
+.setupdemoeditions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.setupdemoedition {
+    display: grid;
+    gap: 0.5rem;
+    cursor: pointer;
+    text-align: center;
+}
+
+.setupdemoedition input {
+    justify-self: center;
+    accent-color: #008542;
+}
+
+.setupdemoedition img {
+    width: 100%;
+    height: 8rem;
+    border: 1px solid #514d4c;
+    border-radius: 0.4rem;
+    object-fit: cover;
+}
+
+.setupdemopath {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+}
+
+.setupdemopath input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.65rem;
+    border: 1px solid #514d4c;
+    border-radius: 0.25rem;
+    color: #ccc;
+    background: #131313;
+}
+
+.setupdemoprogressbar {
+    height: 1rem;
+    margin: 1rem 0 0.5rem;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: #131313;
+}
+
+.setupdemoprogressbar span {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: #008542;
+    transition: width 0.2s ease;
+}
+
+.setupdemodoneimage {
+    display: block;
+    width: 5rem;
+    height: 5rem;
+    margin: 1.5rem auto;
+    object-fit: contain;
+}
+
+.setupdemodone p {
+    text-align: center;
+}
+
+.setupdemofooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.setupdemofooter button {
+    color: white;
+    background: transparent;
+    font: inherit;
+}
+
+.setupdemofooter button:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+@media (max-width: 600px) {
+    .setupdemoeditions {
+        grid-template-columns: 1fr;
+    }
+
+    .setupdemoedition {
+        grid-template-columns: auto 5rem 1fr;
+        align-items: center;
+        text-align: left;
+    }
+
+    .setupdemoedition img {
+        height: 3.25rem;
+    }
+}

@@ -178,7 +178,8 @@
     {
        "title": "Lite Modpack",
        "version": "1.6.4",
-       "icon": "./mc/modpacks/lite",
+       "icon": "./assets/images/mc-icons/command-block.png",
+       "link": "./mc/modpacks/lite",
        "active": false,
        "download": true
     },

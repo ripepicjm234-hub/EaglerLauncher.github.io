@@ -20,12 +20,20 @@ function shuffle(array) {
     }
 }
 
-let gamelink = ".mc/26.2-wasm"
+let gamelink = "./mc/26.3-wasm/"
 
 
 
 // Last Played Game Option
 let selectedGame1 = localStorage.getItem("basegame");
+if (selectedGame1) {
+    try {
+        if (JSON.parse(selectedGame1).link?.includes("26.2")) {
+            localStorage.removeItem("basegame");
+            selectedGame1 = null;
+        }
+    } catch (_) {}
+}
 let selectedGame2 = localStorage.getItem("moddedgame");
 let selectedGame3 = localStorage.getItem("assisted");
 let stealthname = localStorage.getItem("stealthname")
@@ -1266,3 +1274,74 @@ function clearlocalstorageconfirm() {
 };
 
 generatefaqs();
+
+let setupDemoTimer;
+let setupDemoPreviousFocus;
+
+function openSetupDemo() {
+    const setup = document.getElementById("setupdemo");
+    setupDemoPreviousFocus = document.activeElement;
+    setup.setAttribute("aria-hidden", "false");
+    setup.style.display = "flex";
+    document.getElementById("setupdemowelcome").hidden = false;
+    document.getElementById("setupdemoprogress").hidden = true;
+    document.getElementById("setupdemodone").hidden = true;
+    document.getElementById("setupdemonext").hidden = false;
+    document.getElementById("setupdemonext").disabled = false;
+    document.getElementById("setupdemofinish").hidden = true;
+    document.getElementById("setupdemonext").focus();
+}
+
+function startSetupDemo() {
+    const welcome = document.getElementById("setupdemowelcome");
+    const progress = document.getElementById("setupdemoprogress");
+    const next = document.getElementById("setupdemonext");
+    const progressBar = progress.querySelector('[role="progressbar"]');
+    const fill = document.getElementById("setupdemoprogressfill");
+    const percent = document.getElementById("setupdemopercent");
+    const status = document.getElementById("setupdemostatus");
+    let value = 0;
+
+    welcome.hidden = true;
+    progress.hidden = false;
+    next.disabled = true;
+    fill.style.width = "0%";
+    progressBar.setAttribute("aria-valuenow", "0");
+    percent.textContent = "0%";
+    status.textContent = "Preparing preview";
+
+    setupDemoTimer = setInterval(() => {
+        value = Math.min(value + 20, 100);
+        fill.style.width = value + "%";
+        progressBar.setAttribute("aria-valuenow", String(value));
+        percent.textContent = value + "%";
+        status.textContent = value < 40 ? "Copying demo files" : value < 80 ? "Creating shortcuts" : "Finishing preview";
+
+        if (value === 100) {
+            clearInterval(setupDemoTimer);
+            setupDemoTimer = undefined;
+            progress.hidden = true;
+            document.getElementById("setupdemodone").hidden = false;
+            document.getElementById("setupdemonext").hidden = true;
+            document.getElementById("setupdemofinish").hidden = false;
+            document.getElementById("setupdemofinish").focus();
+        }
+    }, 250);
+}
+
+function closeSetupDemo() {
+    clearInterval(setupDemoTimer);
+    setupDemoTimer = undefined;
+    const setup = document.getElementById("setupdemo");
+    setup.style.display = "none";
+    setup.setAttribute("aria-hidden", "true");
+    if (setupDemoPreviousFocus instanceof HTMLElement) {
+        setupDemoPreviousFocus.focus();
+    }
+}
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && document.getElementById("setupdemo").getAttribute("aria-hidden") === "false") {
+        closeSetupDemo();
+    }
+});
