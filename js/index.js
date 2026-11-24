@@ -37,7 +37,7 @@ if (selectedGame1) {
 let selectedGame2 = localStorage.getItem("moddedgame");
 let selectedGame3 = localStorage.getItem("assisted");
 let stealthname = localStorage.getItem("stealthname")
-if (!stealthname == "") {
+if (stealthname) {
 	document.getElementById("stealthinput").value = stealthname
 }
 else {
@@ -45,8 +45,7 @@ else {
 };
 const stealth = localStorage.getItem("stealth")
 const stealthmodebox = document.getElementById("stealthmode");
-console.log(stealth)
-console.log(stealthmodebox.checked)
+stealthmodebox.checked = localStorage.getItem("stealth") === "true";
 let modslauncher
 if (localStorage.getItem("modslauncher")) {
     modslauncher = JSON.parse(localStorage.getItem("modslauncher"))};
@@ -64,16 +63,22 @@ if (customlaunchersnumber > 99) {
 
 
 async function setstealth() {
-	const url = document.getElementById("stealthinput").value
-	const raw = await fetch("https://fetchtitle.eagerlauncher.workers.dev/?url=" + encodeURIComponent(url))
-	const result = await raw.json();
+	const url = document.getElementById("stealthinput").value.trim();
+	if (!url) return;
+
 	document.querySelector("link[rel*='icon']").href = "https://www.google.com/s2/favicons?domain=" + encodeURIComponent(url) + "&sz=128";
-	document.title = result.title
-	console.log(raw)
-	console.log(result)
+	try {
+		const raw = await fetch("https://fetchtitle.eagerlauncher.workers.dev/?url=" + encodeURIComponent(url));
+		if (raw.ok) {
+			const result = await raw.json();
+			if (result.title) document.title = result.title;
+		}
+	} catch (_) {
+		// Keep the selected stealth site even when title lookup is unavailable.
+	}
 	localStorage.setItem("stealthname", url);
     stealthname = localStorage.getItem("stealthname");
-    launchnewtab()
+    launchnewtab();
 }
 
 if (stealthmodebox.checked) {
@@ -81,7 +86,7 @@ if (stealthmodebox.checked) {
 	localStorage.setItem("launchnewtab", true);
 	document.getElementById('launchnewtab').checked = true;
 	document.getElementById('launchnewtab').disabled = true;
-	setstealth()
+	setstealth().catch(() => {});
 } else {
 	document.querySelector("link[rel*='icon']").href = './assets/images/logo.png';
    	document.title = "Eagler Launcher";
@@ -884,16 +889,7 @@ function closedownloadsscreen() {
 
 // Game Edition Selected
 let launcher = "./assets/json/base.json";
-if (!localStorage.getItem("startupprofile")) {
-    localStorage.setItem("startupprofile", "1");
-}
-
-if (localStorage.getItem("startupprofile") === "1") {webedition()};
-if (localStorage.getItem("startupprofile") === "2") {moddededition()};
-if (localStorage.getItem("startupprofile") === "3") {eaglercontrols()};
-if (localStorage.getItem("startupprofile") === "4") {creditsmenu()};
-if (localStorage.getItem("startupprofile") === "5") {settingsmenu()};
-if (localStorage.getItem("startupprofile") === "6") {serversmenu()};
+webedition();
 
 
 function webedition(){
@@ -906,8 +902,6 @@ function webedition(){
     document.getElementById('game-title').src = './assets/images/web-title.png';
     document.getElementById('gameedition').innerHTML = 'EAGLERCRAFT WEB EDITION';
     document.getElementById('header2').style.display = 'none';
-    document.getElementById('header7').style.display = 'none';
-    document.getElementById('header8').style.display = 'none';
     document.getElementById('header9').style.display = 'none';
     document.getElementById('header10').style.display = 'none';
     document.getElementById('header11').style.display = 'none';
@@ -923,8 +917,6 @@ function moddededition(){
     document.getElementById('game-bg').style.backgroundImage = 'url(./assets/images/modded-edition.jpg)';
     document.getElementById('game-title').src = './assets/images/modded-title.png';
     document.getElementById('gameedition').innerHTML = 'EAGLERCRAFT MODDED';
-    document.getElementById('header7').style.display = 'none';
-    document.getElementById('header8').style.display = 'none';
     document.getElementById('header9').style.display = 'none';
     document.getElementById('header10').style.display = 'none';
     document.getElementById('header11').style.display = 'none';
@@ -941,8 +933,6 @@ function eaglercontrols(){
     document.getElementById('game-title').src = './assets/images/controls-title.png';
     document.getElementById('gameedition').innerHTML = 'EAGLERCRAFT MOBILE/CONTROLLER';
     document.getElementById('header2').style.display = 'none';
-    document.getElementById('header7').style.display = 'none';
-    document.getElementById('header8').style.display = 'none';
     document.getElementById('header9').style.display = 'none';
     document.getElementById('header10').style.display = 'none';
     document.getElementById('header11').style.display = 'none';
@@ -960,30 +950,11 @@ function serversmenu(){
     document.getElementById('header4').style.display = 'none';
     document.getElementById('header5').style.display = 'none';
     document.getElementById('header6').style.display = 'none';
-    document.getElementById('header7').style.display = 'none';
-    document.getElementById('header8').style.display = 'none';
     document.getElementById('header9').style.display = 'none';
     document.getElementById('header10').style.display = 'none';
     document.getElementById('header12').style.display = 'none';
     document.getElementById('gtabs7').classList.add('selected');
     serversheader();
-}
-function creditsmenu(){
-    localStorage.setItem("startupprofile", "4");
-    resetTabSelected();
-    document.getElementById('gameedition').innerHTML = 'CREDITS/CONTRIBUTORS';
-    document.getElementById('header1').style.display = 'none';
-    document.getElementById('header2').style.display = 'none';
-    document.getElementById('header3').style.display = 'none';
-    document.getElementById('header4').style.display = 'none';
-    document.getElementById('header5').style.display = 'none';
-    document.getElementById('header6').style.display = 'none';
-    document.getElementById('header9').style.display = 'none';
-    document.getElementById('header10').style.display = 'none';
-    document.getElementById('header12').style.display = 'none';
-    document.getElementById('header11').style.display = 'none';
-    document.getElementById('gtabs5').classList.add('selected');
-    contributorsheader();
 }
 function settingsmenu(){
     localStorage.setItem("startupprofile", "5");
@@ -995,9 +966,7 @@ function settingsmenu(){
     document.getElementById('header4').style.display = 'none';
     document.getElementById('header5').style.display = 'none';
     document.getElementById('header6').style.display = 'none';
-    document.getElementById('header7').style.display = 'none';
     document.getElementById('header12').style.display = 'none';
-    document.getElementById('header8').style.display = 'none';
     document.getElementById('header11').style.display = 'none';
     document.getElementById('gtabs6').classList.add('selected');
     generalsettingsheader();
@@ -1046,16 +1015,6 @@ function serversheader(){
     document.getElementById('servers').style.display = "flex";
     document.getElementById('header11').classList.add('selected');
 }
-function contributorsheader(){
-    resetHeaderSelected();
-    document.getElementById('contributors').style.display = "flex";
-    document.getElementById('header7').classList.add('selected');
-}
-function creditsheader(){
-    resetHeaderSelected();
-    document.getElementById('credits').style.display = "flex";
-    document.getElementById('header8').classList.add('selected');
-}
 function generalsettingsheader(){
     resetHeaderSelected();
     document.getElementById('settings').style.display = "flex";
@@ -1093,11 +1052,11 @@ function resetTabSelected() {
     while (installations.firstChild) {installations.removeChild(installations.firstChild)};
     for (var i = 1; i < 8; i++) { 
         let gtabs = document.getElementById('gtabs' + [i]);
-        gtabs.classList.remove('selected');
+        if (gtabs) gtabs.classList.remove('selected');
     };
     for (var i = 1; i < 13; i++) { 
         let headers = document.getElementById('header' + [i]);
-        headers.style.display = "block";
+        if (headers) headers.style.display = "block";
     };
     document.getElementById('settings').style.display = "none";
     document.getElementById('servers').style.display = "none";
@@ -1109,7 +1068,7 @@ function resetHeaderSelected() {
     while (notes.firstChild) {notes.removeChild(notes.firstChild)};
     for (var i = 1; i < 13; i++) { 
         let headers = document.getElementById('header' + [i]);
-        headers.classList.remove('selected'); 
+        if (headers) headers.classList.remove('selected');
     };
     document.getElementById('game-bg').style.display = "none";
     document.getElementById('gameSelection').style.display = "none";
@@ -1117,8 +1076,6 @@ function resetHeaderSelected() {
     document.getElementById('faq').style.display = "none";
     document.getElementById('installations').style.display = "none";
     document.getElementById('patchNotes').style.display = "none";
-    document.getElementById('credits').style.display = "none";
-    document.getElementById('contributors').style.display = "none";
     document.getElementById('generalsettings').style.display = "none";
     document.getElementById('aboutsettings').style.display = "none";
     document.getElementById("skineditor").style.display = "none";
@@ -1167,14 +1124,60 @@ function launchnewtab() {
     };
 };
 
+let hostGuidePreviousFocus;
+
+function openHostGuide() {
+    const guide = document.getElementById("hostguide");
+    const selectedPath = new URL(gamelink, window.location.href).pathname.replace(/\/+$/, "");
+    const supported = ["/mc/1.5.2", "/mc/1.8.8", "/mc/26.3-wasm"].includes(selectedPath);
+
+    hostGuidePreviousFocus = document.activeElement;
+    document.getElementById("hostguideversion").textContent =
+        `Selected version: ${document.getElementById("gametitle").textContent} (${document.getElementById("gameversion").textContent})`;
+    document.getElementById("hostguidenote").textContent = selectedPath === "/mc/26.3-wasm"
+        ? "Eaglercraft 26.3 WASM runs the integrated world server in your browser and shares it through its built-in LAN/invite flow. Keep the game open, and have friends join with a compatible 26.3 client. This is not a standalone or always-on Java server."
+        : "Keep the game open while hosting. Friends can join over the internet through the game's relay; this is a temporary world, not a 24/7 dedicated server.";
+    document.getElementById("hostguidesteps").hidden = !supported;
+    document.getElementById("hostguidenote").hidden = !supported;
+    document.getElementById("hostguideunsupported").hidden = supported;
+    document.getElementById("hostguidelaunch").disabled = !supported;
+    guide.setAttribute("aria-hidden", "false");
+    guide.style.display = "flex";
+    document.getElementById(supported ? "hostguidelaunch" : "hostguideclose").focus();
+}
+
+function closeHostGuide() {
+    const guide = document.getElementById("hostguide");
+    guide.style.display = "none";
+    guide.setAttribute("aria-hidden", "true");
+    if (hostGuidePreviousFocus instanceof HTMLElement) {
+        hostGuidePreviousFocus.focus();
+    }
+}
+
+function launchHostedWorld() {
+    if (document.getElementById("hostguidelaunch").disabled) {
+        return;
+    }
+    closeHostGuide();
+    openmc();
+}
+
 function openmc() {
-	const w = window.open(gamelink, target)
-	if (stealthmodebox.checked) {
+	const startedAt = performance.now();
+	const gameName = document.getElementById("gametitle").textContent;
+	const w = window.open(gamelink, target);
+	if (!w) {
+		errorNA("Allow pop-ups to launch the game.");
+		return;
+	}
+	if (w !== window && stealthmodebox.checked) {
 		w.addEventListener('load', ()=> {
 			w.document.title = document.title;
 			w.document.querySelector("link[rel*='icon']").href = document.querySelector("link[rel*='icon']").href;
 		});
 	};
+	if (w !== window) showGameLoadScreen(w, startedAt, gameName);
 };
 function presetlaunchers() {
     if (presetscheckbox.checked) {
@@ -1212,48 +1215,316 @@ function presetlaunchers() {
 function stealthmode() {
   	if (stealthmodebox && stealthmodebox.checked) {
   		newtabcheckbox.checked = true;
+		localStorage.setItem("launchnewtab", true);
+		target = "_blank";
   		document.getElementById("stealthinput").style.display = "flex";
   		document.getElementById('launchnewtab').disabled = true;
-		setstealth()
-    	localStorage.setItem("stealth", true)
+		setstealth().catch(() => {});
+		localStorage.setItem("stealth", true);
 
   	} else {
   		document.getElementById("stealthinput").style.display = "none";
   		document.getElementById('launchnewtab').disabled = false;
    		document.querySelector("link[rel*='icon']").href = './assets/images/logo.png';
    		document.title = "Eagler Launcher";
-   		localStorage.setItem("stealth", false)
+		localStorage.setItem("stealth", false);
 
   	}
 }
 
 function stealthnamechange() {
-    localStorage.setItem("stealthname", document.getElementById("stealthinput").value);
+    const url = document.getElementById("stealthinput").value.trim();
+    if (!url) return;
+    localStorage.setItem("stealthname", url);
     stealthname = localStorage.getItem("stealthname");
-    stealthmode();
+    if (stealthmodebox.checked) setstealth();
 };
 
-// Username Generator
+// Local player profile
 let username = document.getElementById('username');
-let userchosen = false;
-if (userchosen === false && !localStorage.getItem("username")) {
-    fetch("https://genr8rs.com/api/Content/Fun/XboxNameGenerator?genr8rsUserId=1748114452.233968321c14391c2&_sGameGenre=any").then((response) => response.json()).then((data) => {
-        if (!data) {return};
-        username.innerHTML = data._sResult;
-        document.getElementById("usernameinput").value = data._sResult;
-        localStorage.setItem("username", data._sResult);
-        userchosen = true;
-    })
-}
-else {
-    username.innerHTML = localStorage.getItem("username");
-    document.getElementById("usernameinput").value = localStorage.getItem("username");
-};
+const savedUsername = localStorage.getItem("username");
+username.innerHTML = savedUsername || "Generic User";
+document.getElementById("usernameinput").value = savedUsername || "";
 
 function usernamechange() {
-    localStorage.setItem("username", document.getElementById("usernameinput").value);
-    username.innerHTML = localStorage.getItem("username");
+    const chosenName = document.getElementById("usernameinput").value.trim();
+    if (!chosenName) {
+        username.innerHTML = "Generic User";
+        localStorage.removeItem("username");
+        return;
+    }
+    localStorage.setItem("username", chosenName);
+    username.innerHTML = chosenName;
 };
+
+const setupModeInfo = {
+    "1": { path: "./assets/json/base.json", storageKey: "basegame" },
+    "2": { path: "./assets/json/modded.json", storageKey: "moddedgame" },
+    "3": { path: "./assets/json/assisted.json", storageKey: "assisted" }
+};
+let setupAvailableGames = [];
+let setupVersionRequest = 0;
+const profileImageDraft = { skin: null, cape: null };
+
+async function loadSetupVersions() {
+    const mode = document.getElementById("startup-mode").value;
+    const modeInfo = setupModeInfo[mode];
+    const versionSelect = document.getElementById("startup-version");
+    const saveButton = document.getElementById("startup-profile-save");
+    const message = document.getElementById("profile-setup-message");
+    const requestId = ++setupVersionRequest;
+    setupAvailableGames = [];
+    versionSelect.disabled = true;
+    saveButton.disabled = true;
+    versionSelect.replaceChildren(new Option("Loading versions...", ""));
+    message.textContent = "";
+    message.classList.remove("profile-error");
+
+    try {
+        const response = await fetch(modeInfo.path);
+        if (!response.ok) throw new Error(`Version list request failed (${response.status}).`);
+        const games = await response.json();
+        if (!Array.isArray(games) || !games.length) throw new Error("No versions are available for this mode.");
+        if (requestId !== setupVersionRequest) return;
+
+        setupAvailableGames = games.filter((game) =>
+            game && game.active !== false && typeof game.link === "string");
+        if (!setupAvailableGames.length) throw new Error("No usable versions were found for this mode.");
+        versionSelect.replaceChildren(new Option("Choose a version", ""));
+        setupAvailableGames.forEach((game) => {
+            versionSelect.add(new Option(`${game.title} — ${game.version}`, game.link));
+        });
+
+        let savedLink = "";
+        const savedSelection = localStorage.getItem(modeInfo.storageKey);
+        if (savedSelection) {
+            try {
+                savedLink = JSON.parse(savedSelection)?.link || "";
+            } catch (error) {
+                message.textContent = "The saved version could not be read; choose a version to continue.";
+                message.classList.add("profile-error");
+            }
+        }
+        versionSelect.value = setupAvailableGames.some((game) => game.link === savedLink)
+            ? savedLink
+            : setupAvailableGames[0]?.link || "";
+        versionSelect.disabled = setupAvailableGames.length === 0;
+        saveButton.disabled = setupAvailableGames.length === 0;
+    } catch (error) {
+        if (requestId !== setupVersionRequest) return;
+        versionSelect.replaceChildren(new Option("Versions unavailable", ""));
+        message.textContent = `Could not load versions: ${error.message}`;
+        message.classList.add("profile-error");
+    }
+}
+
+function renderProfileImage(kind) {
+    const preview = document.getElementById(`profile-${kind}-preview`);
+    const removeButton = preview.nextElementSibling;
+    const dataUrl = profileImageDraft[kind];
+    preview.hidden = !dataUrl;
+    removeButton.hidden = !dataUrl;
+    if (dataUrl) preview.src = dataUrl;
+    else preview.removeAttribute("src");
+}
+
+async function previewProfileImage(input, kind) {
+    const file = input.files[0];
+    const message = document.getElementById("profile-setup-message");
+    if (!file) return;
+    message.textContent = "";
+    message.classList.remove("profile-error");
+
+    try {
+        if (file.type !== "image/png") throw new Error("Choose a PNG image.");
+        if (file.size > 512 * 1024) throw new Error("Choose a PNG smaller than 512 KB.");
+        const bitmap = await createImageBitmap(file);
+        const validSize = kind === "skin"
+            ? (bitmap.width === 64 && (bitmap.height === 64 || bitmap.height === 32))
+            : (bitmap.width === 64 && bitmap.height === 32);
+        bitmap.close();
+        if (!validSize) {
+            throw new Error(kind === "skin"
+                ? "Skin images must be 64x64 or 64x32 pixels."
+                : "Cape images must be 64x32 pixels.");
+        }
+
+        const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.addEventListener("load", () => resolve(reader.result), { once: true });
+            reader.addEventListener("error", () => reject(new Error("Could not read the selected image.")), { once: true });
+            reader.readAsDataURL(file);
+        });
+        if (typeof dataUrl !== "string") throw new Error("Could not read the selected image.");
+        profileImageDraft[kind] = dataUrl;
+        renderProfileImage(kind);
+    } catch (error) {
+        input.value = "";
+        message.textContent = error.message;
+        message.classList.add("profile-error");
+    }
+}
+
+function removeProfileImage(kind) {
+    profileImageDraft[kind] = null;
+    document.getElementById(`profile-${kind}-file`).value = "";
+    renderProfileImage(kind);
+}
+
+function openProfileSetup() {
+    const screen = document.getElementById("startupscreen");
+    const mode = launcher === "./assets/json/modded.json"
+        ? "2"
+        : launcher === "./assets/json/assisted.json" ? "3" : "1";
+    document.getElementById("startupprofile").hidden = false;
+    document.getElementById("startup-username").value = localStorage.getItem("username") || "";
+    document.getElementById("startup-mode").value = setupModeInfo[mode] ? mode : "1";
+    document.getElementById("startup-profile-heading").textContent =
+        localStorage.getItem("username") ? "Edit player setup" : "Set up your player";
+    document.getElementById("profile-setup-message").textContent = "";
+    document.getElementById("profile-setup-message").classList.remove("profile-error");
+    screen.hidden = false;
+    document.getElementById("sidebar").inert = true;
+    document.querySelector(".mainPage").inert = true;
+
+    for (const kind of ["skin", "cape"]) {
+        profileImageDraft[kind] = localStorage.getItem(`profile-${kind}-png`);
+        renderProfileImage(kind);
+    }
+    loadSetupVersions();
+    document.getElementById("startup-username").focus();
+}
+
+function signOut() {
+    localStorage.removeItem("username");
+    localStorage.removeItem("profile-skin-png");
+    localStorage.removeItem("profile-cape-png");
+    document.getElementById("usernameinput").value = "";
+    username.textContent = "Generic User";
+    openProfileSetup();
+}
+
+function createLocalProfile(event) {
+    event.preventDefault();
+    const profileName = document.getElementById("startup-username").value.trim();
+    const mode = document.getElementById("startup-mode").value;
+    const selectedGame = setupAvailableGames.find((game) =>
+        game.link === document.getElementById("startup-version").value);
+    const message = document.getElementById("profile-setup-message");
+    if (!/^[A-Za-z0-9_]{3,16}$/.test(profileName)) {
+        document.getElementById("startup-username").reportValidity();
+        return;
+    }
+    if (!setupModeInfo[mode] || !selectedGame) {
+        message.textContent = "Choose an available game version before continuing.";
+        message.classList.add("profile-error");
+        return;
+    }
+
+    try {
+        for (const kind of ["skin", "cape"]) {
+            const storageKey = `profile-${kind}-png`;
+            if (profileImageDraft[kind]) localStorage.setItem(storageKey, profileImageDraft[kind]);
+            else localStorage.removeItem(storageKey);
+        }
+        localStorage.setItem(setupModeInfo[mode].storageKey, JSON.stringify(selectedGame));
+        localStorage.setItem("username", profileName);
+        localStorage.setItem("startupprofile", mode);
+    } catch (error) {
+        message.textContent = "Could not save this setup. Remove an image and try again.";
+        message.classList.add("profile-error");
+        return;
+    }
+
+    document.getElementById("usernameinput").value = profileName;
+    username.textContent = profileName;
+    if (mode === "1") {
+        selectedGame1 = JSON.stringify(selectedGame);
+        webedition();
+    } else if (mode === "2") {
+        selectedGame2 = JSON.stringify(selectedGame);
+        moddededition();
+    } else {
+        selectedGame3 = JSON.stringify(selectedGame);
+        eaglercontrols();
+    }
+    dismissStartupScreen();
+}
+
+function dismissStartupScreen() {
+    document.getElementById("startupscreen").hidden = true;
+    document.getElementById("sidebar").inert = false;
+    document.querySelector(".mainPage").inert = false;
+}
+
+function formatLoadBytes(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function measureLoadedResources(pageWindow) {
+    try {
+        const performanceEntries = pageWindow.performance;
+        const navigation = performanceEntries.getEntriesByType("navigation")[0];
+        const resources = performanceEntries.getEntriesByType("resource")
+            .filter((entry) => new URL(entry.name, pageWindow.location.href).origin === pageWindow.location.origin);
+        const transferred = (navigation?.encodedBodySize || 0) +
+            resources.reduce((total, entry) => total + (entry.encodedBodySize || 0), 0);
+        return { count: resources.length + (navigation ? 1 : 0), bytes: transferred };
+    } catch (error) {
+        return null;
+    }
+}
+
+let gameLoadTimer;
+
+function closeGameLoadScreen() {
+    clearInterval(gameLoadTimer);
+    gameLoadTimer = undefined;
+    document.getElementById("gameloadscreen").hidden = true;
+}
+
+function showGameLoadScreen(gameWindow, startedAt, gameName) {
+    const screen = document.getElementById("gameloadscreen");
+    const progress = document.getElementById("gameload-progress");
+    const status = document.getElementById("gameload-status");
+    const stats = document.getElementById("gameload-stats");
+    const closeButton = document.getElementById("gameload-close");
+    document.getElementById("gameload-title").textContent = `Loading ${gameName}`;
+    progress.classList.remove("complete");
+    progress.setAttribute("aria-busy", "true");
+    status.textContent = "Waiting for the game page to finish loading...";
+    closeButton.hidden = true;
+    screen.hidden = false;
+    clearInterval(gameLoadTimer);
+
+    const updateElapsed = () => {
+        stats.textContent = `Elapsed: ${((performance.now() - startedAt) / 1000).toFixed(1)} seconds`;
+        if (gameWindow.closed) {
+            clearInterval(gameLoadTimer);
+            gameLoadTimer = undefined;
+            status.textContent = "The game window was closed before loading finished.";
+            closeButton.hidden = false;
+        }
+    };
+    updateElapsed();
+    gameLoadTimer = setInterval(updateElapsed, 100);
+
+    gameWindow.addEventListener("load", () => {
+        clearInterval(gameLoadTimer);
+        gameLoadTimer = undefined;
+        const elapsed = ((performance.now() - startedAt) / 1000).toFixed(1);
+        const resources = measureLoadedResources(gameWindow);
+        progress.classList.add("complete");
+        progress.setAttribute("aria-busy", "false");
+        status.textContent = `Game page loaded in ${elapsed} seconds. The game may still be starting.`;
+        stats.textContent = resources
+            ? `${resources.count} resources • ${formatLoadBytes(resources.bytes)} loaded`
+            : `Elapsed: ${elapsed} seconds • Resource details unavailable`;
+        closeButton.hidden = false;
+    }, { once: true });
+}
 
 // Clear Local Storage
 
@@ -1343,5 +1614,8 @@ function closeSetupDemo() {
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && document.getElementById("setupdemo").getAttribute("aria-hidden") === "false") {
         closeSetupDemo();
+    }
+    if (event.key === "Escape" && document.getElementById("hostguide").getAttribute("aria-hidden") === "false") {
+        closeHostGuide();
     }
 });

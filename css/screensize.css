@@ -123,6 +123,13 @@ hr {
   font-size: 1.5vw;
 }
 
+#hostworldbutton {
+  left: 60%;
+  bottom: 0.5vw;
+  padding: 0.35rem 0.45rem;
+  font-size: 0.65rem;
+}
+
 /* Mods Menu CSS */
 
 #mods {

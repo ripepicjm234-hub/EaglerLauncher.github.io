@@ -219,7 +219,7 @@ hr {
     border-left: 0.4vw solid var(--ui-select);
 }
 
-#gtabs1 img {width: 3vw;}
+
 #gtabs2 img, #gtabs3 img, #gtabs4 img {width: 2.5vw;}
 #gtabs5 {bottom: 7.5vw; width: 14.5vw;}
 #gtabs6 {bottom: 2.5vw; width: 14.5vw;}
@@ -1373,4 +1373,337 @@ hr {
     .setupdemoedition img {
         height: 3.25rem;
     }
+}
+
+.startupscreen,
+.gameloadscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: grid;
+    place-items: center;
+    overflow-y: auto;
+    padding: 1rem;
+    color: #fff;
+    background-color: #604c36;
+    background-image:
+        linear-gradient(rgba(18, 24, 31, 0.3), rgba(18, 24, 31, 0.5)),
+        repeating-linear-gradient(0deg, transparent 0 31px, rgba(20, 25, 16, 0.3) 31px 32px),
+        repeating-linear-gradient(90deg, transparent 0 31px, rgba(20, 25, 16, 0.3) 31px 32px),
+        linear-gradient(#6fb8e8 0 57%, #8ecbe9 57% 63%, #57943e 63% 68%, #765638 68% 100%);
+    image-rendering: pixelated;
+}
+
+.startupscreen[hidden],
+.gameloadscreen[hidden] {
+    display: none;
+}
+
+.startupcard,
+.gameloadcard {
+    width: min(680px, calc(100vw - 2rem));
+    box-sizing: border-box;
+    padding: clamp(2rem, 6vw, 4rem);
+    border: 5px solid #171717;
+    outline: 3px solid #b8b8b8;
+    background: #282828;
+    box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.6);
+    text-align: center;
+    font-family: "Courier New", monospace;
+}
+
+.startupcard {
+    min-height: min(580px, calc(100vh - 2rem));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: start;
+    margin-block: auto;
+}
+
+.startup-eyebrow {
+    margin-top: 1rem;
+    color: #91d654;
+    font-size: 0.85rem;
+    font-weight: bold;
+    letter-spacing: 0.16em;
+}
+
+.startupcard h2,
+.gameloadcard h2 {
+    margin: 0.75rem 0;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    text-shadow: 3px 3px #111;
+}
+
+.startup-subtitle,
+.startup-stats,
+.startup-note,
+.gameloadcard p:not(.startup-eyebrow) {
+    color: #d3d3d3;
+    line-height: 1.6;
+}
+
+.startup-progress {
+    height: 1.25rem;
+    margin: 2rem 0 0.75rem;
+    overflow: hidden;
+    border: 3px solid #111;
+    background: repeating-linear-gradient(90deg, #454545 0 16px, #252525 16px 20px);
+}
+
+.startup-progress span {
+    display: block;
+    width: 35%;
+    height: 100%;
+    background: repeating-linear-gradient(90deg, #70ad3b 0 16px, #8bcb4e 16px 20px);
+    animation: startup-loading 1.2s steps(6, end) infinite;
+}
+
+.startup-progress.complete span {
+    width: 100%;
+    animation: none;
+}
+
+@keyframes startup-loading {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(290%); }
+}
+
+.startup-stats {
+    font-size: 0.9rem;
+}
+
+.startupprofile {
+    text-align: left;
+}
+
+.startupprofile[hidden] {
+    display: none;
+}
+
+.startupprofile h2,
+.startupprofile .startup-subtitle {
+    text-align: center;
+}
+
+.startupprofile label {
+    display: block;
+    margin: 2rem 0 0.5rem;
+    font-weight: bold;
+}
+
+.startupprofile input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.9rem;
+    border: 3px solid #111;
+    background: #171717;
+    color: #fff;
+    font: inherit;
+}
+
+.startupprofile input:focus {
+    outline: 2px solid #91d654;
+}
+
+.setupfields {
+    display: grid;
+    grid-template-columns: minmax(7rem, 0.7fr) minmax(0, 1.3fr);
+    align-items: center;
+    gap: 0.6rem 1rem;
+    margin-top: 1.25rem;
+}
+
+.setupfields label,
+.profileimports label {
+    margin: 0;
+    font-weight: bold;
+}
+
+.setupfields select,
+.profileimports input[type="file"] {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 0.7rem;
+    border: 3px solid #111;
+    background: #171717;
+    color: #fff;
+    font: inherit;
+}
+
+.setupfields select:disabled {
+    opacity: 0.65;
+}
+
+.profileimports {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+}
+
+.profileimportpreview {
+    display: flex;
+    min-height: 2rem;
+    align-items: center;
+    gap: 1rem;
+}
+
+.profileimportpreview img {
+    max-width: 8rem;
+    max-height: 4rem;
+    object-fit: contain;
+    image-rendering: pixelated;
+    background-color: #444;
+    background-image:
+        linear-gradient(45deg, #777 25%, transparent 25%),
+        linear-gradient(-45deg, #777 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #777 75%),
+        linear-gradient(-45deg, transparent 75%, #777 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+
+.profile-remove {
+    padding: 0.45rem 0.7rem;
+    border: 2px solid #111;
+    background: #684038;
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+}
+
+.profile-remove:hover {
+    background: #8d5041;
+}
+
+.startup-note {
+    margin: 0.75rem 0 1.5rem;
+    font-size: 0.8rem;
+}
+
+.startup-note[role="status"]:empty {
+    display: none;
+}
+
+.startup-note[role="status"] {
+    color: #d3d3d3;
+}
+
+.startup-note[role="status"].profile-error {
+    color: #ff8f80;
+}
+
+.profileaction {
+    margin: 0.25rem;
+    color: #fff;
+    background: transparent;
+    font: inherit;
+}
+
+.startupbutton {
+    width: 100%;
+    padding: 0.9rem;
+    border: 3px solid #172311;
+    background: #508d2d;
+    color: #fff;
+    cursor: pointer;
+    font: bold 1rem "Courier New", monospace;
+    text-shadow: 1px 1px #111;
+}
+
+.startupbutton:hover {
+    background: #65a93c;
+}
+
+.gameloadcard {
+    max-width: 560px;
+}
+
+.gameloadcard .startup-progress {
+    margin-top: 1.5rem;
+}
+
+.gameloadcard .startup-progress.complete span {
+    background: #91d654;
+}
+
+.gameloadcard .startupbutton {
+    margin-top: 1rem;
+}
+
+@media (max-width: 600px) {
+    .startupcard,
+    .gameloadcard {
+        padding: 1.5rem;
+    }
+
+    .startupcard {
+        min-height: auto;
+    }
+
+    .setupfields {
+        grid-template-columns: 1fr;
+    }
+}
+
+#download,
+#downloadzip {
+    color: inherit;
+    text-decoration: none;
+}
+
+.offlinedownloadhelp {
+    margin: 0.5rem 0 1rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+#hostworldbutton {
+    position: absolute;
+    left: 56vw;
+    bottom: 0.75vw;
+    padding: clamp(0.35rem, 0.7vw, 0.65rem) clamp(0.55rem, 1vw, 1rem);
+    border: 3px solid #172311;
+    background: #508d2d;
+    color: #fff;
+    cursor: pointer;
+    font: bold clamp(0.7rem, 1vw, 1rem) "Courier New", monospace;
+    text-shadow: 1px 1px #111;
+}
+
+#hostworldbutton:hover {
+    background: #65a93c;
+}
+
+.hostguidesteps ol {
+    margin: 1rem 0 1rem 1.5rem;
+    padding: 0;
+    text-align: left;
+    line-height: 1.6;
+}
+
+.hostguidesteps li {
+    margin-bottom: 0.6rem;
+    padding-left: 0.25rem;
+}
+
+.hostguidenote,
+.hostguidewarning {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border: 2px solid #171717;
+    background: #383838;
+    line-height: 1.5;
+}
+
+.hostguidewarning {
+    color: #ffd166;
+}
+
+#hostguidelaunch:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
 }

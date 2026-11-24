@@ -1,5 +1,31 @@
 [  		
 	{
+        "title": "Site update: 26.3 World Hosting",
+        "version": "v1.5.6",
+        "description": "Added Eaglercraft 26.3 WASM to the supported local world-hosting flow",
+        "date": "November 24th, 2026",
+        "icon": "sidebar/i-servers.png",
+        "type": "site",
+        "notes": [
+            "Added 26.3 WASM to the Host a World guide",
+            "Explained that 26.3 uses its browser-hosted integrated server and built-in LAN/invite flow",
+            "Clarified that the host must remain in-game and this is not a standalone Java server"
+        ]
+	},
+	{
+        "title": "Site update: Host a World",
+        "version": "v1.5.5",
+        "description": "Added a guided world-hosting flow for supported Vanilla versions",
+        "date": "November 23rd, 2026",
+        "icon": "sidebar/i-servers.png",
+        "type": "site",
+        "notes": [
+            "Added a Host a world guide for Vanilla Eaglercraft 1.5.2 and 1.8.8 built-in world sharing",
+            "Explained relay-based internet access and that the host must keep the game open",
+            "Unsupported game versions are identified instead of being presented as hostable"
+        ]
+	},
+	{
         "title": "Site update: Offline Downloads",
         "version": "v1.5.4",
         "description": "Added a download screen and more servers",

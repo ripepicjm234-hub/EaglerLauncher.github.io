@@ -25,6 +25,83 @@
   gtag('js', new Date());
 </script>
 <body>
+    <div id="startupscreen" class="startupscreen" role="dialog" aria-modal="true" aria-labelledby="startup-profile-heading" hidden>
+        <section class="startupcard">
+            <form id="startupprofile" class="startupprofile" onsubmit="createLocalProfile(event)">
+                <p class="startup-eyebrow">PLAYER SETUP</p>
+                <h2 id="startup-profile-heading">Set up your player</h2>
+                <p class="startup-subtitle">Choose what you want to play.</p>
+                <label for="startup-username">Player name</label>
+                <input id="startup-username" name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9_]+" autocomplete="username" placeholder="YourMinecraftName" required>
+                <div class="setupfields">
+                    <label for="startup-mode">Game mode</label>
+                    <select id="startup-mode" name="mode" onchange="loadSetupVersions()">
+                        <option value="1">Vanilla</option>
+                        <option value="2">Modded</option>
+                        <option value="3">Mobile / Controller</option>
+                    </select>
+                    <label for="startup-version">Version</label>
+                    <select id="startup-version" name="version" required disabled>
+                        <option value="">Loading versions...</option>
+                    </select>
+                </div>
+                <div class="profileimports">
+                    <label for="profile-skin-file">Import skin (PNG, 64×64 or 64×32)</label>
+                    <input id="profile-skin-file" type="file" accept="image/png" onchange="previewProfileImage(this, 'skin')">
+                    <div class="profileimportpreview">
+                        <img id="profile-skin-preview" alt="Skin preview" hidden>
+                        <button class="profile-remove" type="button" onclick="removeProfileImage('skin')" hidden>Remove skin</button>
+                    </div>
+                    <label for="profile-cape-file">Import cape (PNG, 64×32)</label>
+                    <input id="profile-cape-file" type="file" accept="image/png" onchange="previewProfileImage(this, 'cape')">
+                    <div class="profileimportpreview">
+                        <img id="profile-cape-preview" alt="Cape preview" hidden>
+                        <button class="profile-remove" type="button" onclick="removeProfileImage('cape')" hidden>Remove cape</button>
+                    </div>
+                </div>
+                <p class="startup-note">Profile and image imports stay in this browser. Game clients may require their own skin import.</p>
+                <p id="profile-setup-message" class="startup-note" role="status"></p>
+                <button id="startup-profile-save" class="startupbutton" type="submit" disabled>Save setup and continue</button>
+            </form>
+        </section>
+    </div>
+    <div id="gameloadscreen" class="gameloadscreen" role="status" aria-live="polite" hidden>
+        <section class="gameloadcard">
+            <p class="startup-eyebrow">GAME LAUNCH</p>
+            <h2 id="gameload-title">Loading game...</h2>
+            <div id="gameload-progress" class="startup-progress" role="progressbar" aria-label="Game page loading" aria-busy="true">
+                <span></span>
+            </div>
+            <p id="gameload-status">Waiting for the game page...</p>
+            <p id="gameload-stats" class="startup-stats">Elapsed: 0.0 seconds</p>
+            <button id="gameload-close" class="startupbutton" type="button" onclick="closeGameLoadScreen()" hidden>Close</button>
+        </section>
+    </div>
+    <div id="hostguide" class="setupdemo" role="dialog" aria-modal="true" aria-labelledby="hostguidetitle" aria-hidden="true">
+        <section class="setupdemocard">
+            <header class="setupdemoheader">
+                <img src="./assets/images/sidebar/i-servers.png" alt="">
+                <div>
+                    <p id="hostguidetitle" class="bolded">Host a World</p>
+                    <p class="setupdemolabel">Built-in multiplayer sharing</p>
+                </div>
+            </header>
+            <div class="hostguidesteps">
+                <p id="hostguideversion" class="setupdemointro"></p>
+                <ol id="hostguidesteps">
+                    <li>Launch the selected version and create or open a singleplayer world.</li>
+                    <li>Open the pause menu and choose the world-sharing option, such as <strong>Share to LAN</strong> or <strong>Open to LAN</strong>.</li>
+                    <li>Copy the invite code and send it to your friends. They should select the same version and join from Multiplayer.</li>
+                </ol>
+                <p id="hostguidenote" class="hostguidenote">Keep the game open while hosting. Friends can join over the internet through the game's relay; this is a temporary world, not a 24/7 dedicated server.</p>
+                <p id="hostguideunsupported" class="hostguidewarning" hidden>World sharing is supported here for Vanilla 1.5.2, Vanilla 1.8.8, and Eaglercraft 26.3 WASM. Choose one of those versions to host.</p>
+            </div>
+            <footer class="setupdemofooter">
+                <button id="hostguideclose" class="classicbutton" type="button" onclick="closeHostGuide()">Cancel</button>
+                <button id="hostguidelaunch" class="classicbutton greenbutton" type="button" onclick="launchHostedWorld()">Launch selected version</button>
+            </footer>
+        </section>
+    </div>
     <div id="externalmenu"></div>
     <div id="naerror" class="error">
         <div>
@@ -106,9 +183,6 @@
         </section>
     </div>
     <div class="sidebar" id="sidebar">
-        <div id="gtabs1" class="sidebarOptions" style="gap: 1vw;" onclick=location.href='https://irv77.github.io/AmplerLauncher/'>
-            <img src="./assets/images/logo_old.png"><div class="gTabsText"><p>Ampler Launcher</p></div>
-        </div>
         <div onclick="webedition()" id="gtabs2" class="sidebarOptions selected">
             <img src="./assets/images/sidebar/i-web.png">
             <div class="gTabsText">
@@ -137,13 +211,10 @@
                 <p>Servers </p>
             </div>
 		</div>
-        <div id="gtabs5" class="sidebarOptions sidebarBottom" onclick="creditsmenu()">
-            <img src="./assets/images/sidebar/m-credits.png"><div class="gTabsText"><p> Credits</p></div>
-        </div>
         <div id="gtabs6" class="sidebarOptions sidebarBottom" onclick="settingsmenu()">
             <img src="./assets/images/sidebar/m-settings.png"><div class="gTabsText"><p> Settings</p></div>
         </div>
-        <div class="launcherVersion"><p>v1.5.4</p></div>
+        <div class="launcherVersion"><p>v1.5.6</p></div>
     </div>
     <div class="mainPage">
         <div class="gameHeader">
@@ -155,8 +226,6 @@
                     <li id="header4" class="headerButtons" onclick="installationheader()">Installations</li>
                     <li id="header5" class="headerButtons" onclick="skinsheader()">Skins</li>
                     <li id="header6" class="headerButtons" onclick="patchnotesheader()">Patch Notes</li>
-                    <li id="header7" class="headerButtons" onclick="contributorsheader()">Contributors</li>
-                    <li id="header8" class="headerButtons" onclick="creditsheader()">Credits</li>
                     <li id="header9" class="headerButtons" onclick="generalsettingsheader()">General</li>
                     <li id="header10" class="headerButtons" onclick="aboutsettingsheader()">About</li>
                     <li id="header11" class="headerButtons" onclick="serversheader()">Server List</li>
@@ -211,67 +280,20 @@
 				<iframe src="./skineditor" id="skinsiframe">iframe isnt enabled! if you can't enable it, go to EaglerLauncher.github.io/skineditor</iframe>
             </div>
         </div>
-         <div id="contributors">
-            <div style="text-align: center;">
-                <p class="bolded contributorstitle">Contributors</p>
-                <p>People who have added to the Eagler Launcher</p>
-            </div>
-            <div class="contributorsdiv">
-                <div class="contributortile">
-                    <div class="contributorside">
-                        <p class="bolded contributoruser">IRV77</p>
-                        <p class="contributordescription">Creator of Ampler Launcher (Currently the original Ampler Launcher is down)</p>
-                    </div>
-                        <img src="./assets/images/credits/irv77.png">
-                </div>
-                <div class="contributortile">
-                    <div class="contributorside">
-                        <p class="bolded contributoruser">DutchDucksDevelopment</p>
-                        <p class="contributordescription">Creator of Eaglerlauncher, added offline download, more clients and modpacks and QOL features</p>
-                    </div>
-                        <img src="./assets/images/credits/DDD.png">
-                </div>
-                <div class="contributortile">
-                    <div class="contributorside">
-                        <p class="bolded contributoruser">TheCreationKing</p>
-                        <p class="contributordescription">Made the skin editor</p>
-                    </div>
-                        <img src="./assets/images/credits/TheCreationKing.png">
-                </div>
-            </div>
-        </div>
-        <div id="credits">
-            <div style="text-align: center;">
-                <p class="bolded contributorstitle">Credits</p>
-                <p>Resources that are used</p>
-            </div>
-            <div class="contributorsdiv">
-                <div class="credittile">
-                    <div class="contributorside">
-                        <p class="bolded contributoruser">Web Jeet</p>
-                        <p class="contributordescription">Original minecraft launcher concept code</p>
-                    </div>
-                        <img src="./assets/images/credits/web-jeet.png">
-                </div>
-                <div class="credittile">
-                    <div class="contributorside">
-                        <p class="bolded contributoruser">Eaglercraft</p>
-                        <p class="contributordescription">Minecraft code for website</p>
-                    </div>
-                        <img src="./assets/images/icons/eaglercraft.png">
-                </div>
-            </div>
-        </div>
         <div id="settings">
             <div id="generalsettings">
 				<div id="settingsbuttons" style="display: flex; gap: 10px;">
 					<div class="classicbutton" id="review" onclick="location.href='https://docs.google.com/forms/d/e/1FAIpQLScu0EeJLukO-5I8OsG2C_WSZKJWWv-99ul2qigEpwYhf_Isvg/viewform'">
 	                    <p class="bolded">Review the Launcher</p>
 	                </div> <br>
-	                <div class="classicbutton" id="download" onclick="location.href='https://github.com/EaglerLauncher/EaglerLauncher.github.io/releases'">
-	                    <p class="bolded">Download offline version</p>
-	                </div>
+	                <a class="classicbutton" id="download" href="./offline-launcher.html" download="EaglerLauncher.html">
+	                    <p class="bolded">Download HTML launcher</p>
+	                </a>
+	                <a class="classicbutton" id="downloadzip" href="https://github.com/ripepicjm234-hub/EaglerLauncher.github.io/archive/refs/heads/main.zip">
+	                    <p class="bolded">Download full offline ZIP</p>
+	                </a>
 				</div>
+                <p class="offlinedownloadhelp">The single-file HTML launcher needs internet. For the full offline site, extract the ZIP and run <strong>start-offline.bat</strong> (Windows) or <strong>start-offline.py</strong>.</p>
                 <button class="classicbutton setupdemobutton" type="button" onclick="openSetupDemo()">Try the fake setup</button>
                 <p class="bolded settingstitle">LAUNCHER SETTINGS</p>
                 <div class="settingoption"><input id="launcherpresets" class="settingsbox" type="checkbox" onchange="presetlaunchers()"><p>Preset installations</p></div>
@@ -280,6 +302,9 @@
                 <input id="stealthinput" type="text" autocomplete="off" placeholder="https://docs.google.com" value="https://docs.google.com" onkeyup="if (event.key === 'Enter') stealthnamechange()">
                 <p class="bolded settingstitle">LAUNCHER USERNAME</p>
                 <input id="usernameinput" type="text" autocomplete="off" placeholder="Username" onkeyup="usernamechange()">
+                <p class="bolded settingstitle">PLAYER PROFILE</p>
+                <button class="classicbutton profileaction" type="button" onclick="openProfileSetup()">Edit player setup</button>
+                <button class="classicbutton profileaction" type="button" onclick="signOut()">Sign out</button>
                 <p class="bolded settingstitle">EAGLER WEB EDITION SETTINGS</p>
                 <p style="font-style: italic;">More Coming Soon!</p>
                 <div class="clearstoragebutton" onclick="clearlocalstorage()">
@@ -293,16 +318,16 @@
                     </div>
                     <p class="bolded settingstitle">EAGLER LAUNCHER</p>
                     <p class="settingsdetails">A minecraft themed launcher for Eaglercraft!</p>
-                    <p class="settingsdetails">Created by irv77, Forked by Dutch Ducks Development</p>
+                    <p class="settingsdetails">Created by PO Labs</p>
                 </div>
                 <hr>
                 <p class="bolded settingstitle">UI</p>
-                <p class="settingsdetails">v1.5.4</p>
-                <p class="settingsdetails">November 6th, 2026</p>
+                <p class="settingsdetails">v1.5.6</p>
+                <p class="settingsdetails">November 24th, 2026</p>
                 <hr>
-                <p class="bolded settingstitle">LEGAL AND CREDITS</p>
+                <p class="bolded settingstitle">LEGAL</p>
                 <p class="settingsdetails">This website is not affiliated with Mojang.</p>
-                <p class="settingsdetails">Copyright © 2024-2026 <span style="color: green; text-shadow: 0 0 1vw;">Dutch Ducks Development</span>. All rights reserved.</p>
+                <p class="settingsdetails">Copyright © 2024-2026 <span style="color: green; text-shadow: 0 0 1vw;">PO Labs</span>. All rights reserved.</p>
             </div>
         </div>
         <div id="gameSelection">
@@ -327,6 +352,7 @@
                 </div>
             <div id="dropdn" class="dropdownMenu" style="visibility: hidden;"></div>
             <a id="playbutton" onclick="openmc()"><div id="mainbutton" class="playButton"></div></a>
+            <button id="hostworldbutton" type="button" onclick="openHostGuide()">Host a world</button>
             <div class="username centeredIcon bolded"><p id="username">Generic User</p></div>
         </div>
     </div>
